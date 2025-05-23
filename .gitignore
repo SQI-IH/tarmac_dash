@@ -1,0 +1,8 @@
+.Rhistory
+.RData
+.Rproj.user
+output
+rsconnect
+data/*.csv
+data/*.rds
+app_data/

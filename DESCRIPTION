@@ -1,0 +1,29 @@
+Package: tarmac_dash
+Title: Tarmac Dashboard
+Version: 0.0.0
+Author: lmboulet
+Description: Your Description Here
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    dashboardthemes,
+    data.table,
+    devtools,
+    dplyr,
+    golem,
+    googledrive,
+    googlesheets4,
+    lubridate,
+    pins,
+    pkgload,
+    plotly,
+    purrr,
+    shiny,
+    shinycssloaders,
+    shinydashboard,
+    shinydashboardPlus,
+    shinyjs,
+    shinyWidgets,
+    stringr,
+    tidyr
+RoxygenNote: 7.3.2
