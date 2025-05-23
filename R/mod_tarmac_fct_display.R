@@ -2,13 +2,6 @@
 #' @export
 #' @name mod_tarmac_fct_display
 
-options(
-  # whenever there is one account token found, use the cached token
-  gargle_oauth_email = TRUE,
-  # specify auth tokens should be stored in a hidden directory ".secrets"
-  gargle_oauth_cache = "./app_data/.secrets"
-)
-
 tarmacFilter<- function(df){
   df |>
     filter(stringr::str_detect(
