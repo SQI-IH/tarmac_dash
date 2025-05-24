@@ -97,6 +97,7 @@ typePlot <- function(df) {
     ) |>
     dplyr::group_by(hospital_city, reason_condensed) |>
     dplyr::count()
+  color_palette <- colorRampPalette(c("#005AA2", "#FFC72C","#DE5428" ))
   
   plotly::plot_ly(df_grouped) |>
     plotly::add_trace(
