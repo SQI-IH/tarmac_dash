@@ -62,12 +62,19 @@ tarmac_description_box <- function(ns) {
       style = "flex:0 0 auto; display:flex; align-items:center; gap:16px; margin-left:auto;",
       shiny::tags$a(
         href = get_toolkit_download_url(),
-        shiny::tags$img(src = "www/toolkit-icon.png", alt = "Tarmac Toolkit", width = "80px")
+        shiny::tags$img(
+          src = "www/toolkit-icon.png",
+          alt = "Tarmac Toolkit",
+          width = "80px",
+          title = "Download Toolkit")
       ),
       shiny::tags$a(
         href = "www/tarmac-qr.png",
         download = "tarmac-qr.png",
-        shiny::tags$img(src = "www/tarmac-qr.png", alt = "QR Code", width = "80px")
+        shiny::tags$img(src = "www/tarmac-qr.png",
+                        alt = "QR Code",
+                        width = "80px",
+                        title = "Download QR code")
       )
     )
   )
