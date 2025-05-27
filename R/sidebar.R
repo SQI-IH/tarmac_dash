@@ -7,7 +7,7 @@ sidebar <- function() {
       # # ,menuItem("ED Site Profiles",tabName = "site_profile",icon = icon("hospital"))
       ,menuItem("ED Statistics", tabName = "ed_statistics", icon = icon("chart-column"))
       ,menuItem("Project Documents", tabName = "project_docs", icon = icon("file"))
-      # ,menuItem("ED Event Viewer", tabName = "event_analysis", icon = icon("calendar"))
+      ,menuItem("ED Event Viewer", tabName = "event_analysis", icon = icon("calendar"))
     ),
     collapsed = FALSE,
     width = 200
