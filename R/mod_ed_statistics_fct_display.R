@@ -113,13 +113,14 @@ weekly_arrivals <- function(df, timerange = c("0:00","23:00"), input) {
 #' @param from.google Logical, whether to load from Google Drive
 #' @export
 edLoad <- function(fname, from.google = FALSE) {
+  # if(grepl('sparwood', fname, ignore.case = TRUE)){browser()}
   if (from.google) {
     df <- load_drive_csv_in_folder(fname, folder = "Tarmac Dash ED Data")
   } else {
     df <- data.table::fread(fname, colClasses = list(character = "ed_arrival_date_time"))
   }
   
-  df |>
+  z <- df |>
     dplyr::mutate(
       datetime = parse_ed_time(ed_arrival_date_time),
       date = lubridate::as_date(datetime),

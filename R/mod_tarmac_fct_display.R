@@ -146,7 +146,7 @@ parse_ed_time <- function(date_vec) {
   # Try known formats in order of likelihood
   parsed <- parse_date_time(
     date_vec,
-    orders = c("ymd HMS", "ymd HM", "ymd", "mdy HMS", "mdy HM", "mdy",
+    orders = c("Ymd HMS", "Ymd HM", "Ymd", "mdY HMS", "mdY HM", "mdY",
                "dmy HMS", "dmy HM", "dmy", "Ymd HMS", "Ymd"),
     exact = FALSE,
     tz = "UTC"
