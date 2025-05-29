@@ -2,11 +2,7 @@
 % Please edit documentation in R/mod_tarmac_fct_display.R
 \name{mod_tarmac_fct_display}
 \alias{mod_tarmac_fct_display}
-\alias{tarmacFilter}
 \title{Load and clean ED data from all sites}
-\usage{
-tarmacFilter(df)
-}
 \description{
 Load and clean ED data from all sites
 }

@@ -2,6 +2,13 @@
 #' @export
 #' @name mod_tarmac_fct_display
 
+options(
+  # whenever there is one account token found, use the cached token
+  gargle_oauth_email = TRUE,
+  # specify auth tokens should be stored in a hidden directory ".secrets"
+  gargle_oauth_cache = "./app_data/.secrets"
+)
+
 tarmacFilter<- function(df){
   df |>
     filter(stringr::str_detect(
@@ -146,7 +153,7 @@ parse_ed_time <- function(date_vec) {
   # Try known formats in order of likelihood
   parsed <- parse_date_time(
     date_vec,
-    orders = c("Ymd HMS", "Ymd HM", "Ymd", "mdY HMS", "mdY HM", "mdY",
+    orders = c("ymd HMS", "ymd HM", "ymd", "mdy HMS", "mdy HM", "mdy",
                "dmy HMS", "dmy HM", "dmy", "Ymd HMS", "Ymd"),
     exact = FALSE,
     tz = "UTC"

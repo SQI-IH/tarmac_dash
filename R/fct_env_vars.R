@@ -30,3 +30,16 @@ custom_colors <-
     "#17becf"  # cyan
   )
 # c("#055899", "#9DB7CF", "#F8FCFD", "#FDFDFD", "#87B4DB")
+
+facilities.in.model <- c("100 Mile District Hospital", "Arrow Lakes Hospital", "Boundary Hospital", 
+                         "Cariboo Memorial Hosp & Hlth", "Castlegar & District Community", 
+                         "Chase & District Health Centre", "Creston Valley Hospital", 
+                         "Dr Helmcken Memorial Hospital", "East Kootenay Reg Hospital", 
+                         "Elk Valley Hospital", "Golden & District Hospital", "Invermere & District Hospital", 
+                         "Kelowna General Hospital", "Kootenay Boundary Reg Hospital", 
+                         "Kootenay Lake Hospital", "Lillooet Hospital & Health Cen", "Nicola Valley Hospital & HC", 
+                         "Penticton Regional Hospital", "Princeton General Hospital", 
+                         "Queen Victoria Hospital", "Shuswap Lake Hospital", "Slocan Community Health Centre", 
+                         "South Okanagan General Hosp.", "South Similkameen Health Centr", 
+                         "Sparwood Health Care Centre", "Vernon Jubilee Hospital", "Victorian Com. Health Kaslo"
+)
