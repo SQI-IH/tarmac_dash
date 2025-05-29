@@ -8,6 +8,7 @@ sidebar <- function() {
       ,menuItem("ED Statistics", tabName = "ed_statistics", icon = icon("chart-column"))
       ,menuItem("Project Documents", tabName = "project_docs", icon = icon("file"))
       ,menuItem("ED Event Viewer", tabName = "event_analysis", icon = icon("calendar"))
+      ,menuItem("ED Prediction Model",tabName = "ml_modelling",icon = icon("chart-diagram"))
     ),
     collapsed = FALSE,
     width = 200

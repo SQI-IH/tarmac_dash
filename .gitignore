@@ -6,3 +6,6 @@ rsconnect
 data/*.csv
 data/*.rds
 app_data/
+ed_pred_model_dev/*.png
+ed_pred_model_dev/*.csv
+ed_pred_model_dev/logs/
