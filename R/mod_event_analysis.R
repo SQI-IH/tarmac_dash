@@ -46,8 +46,8 @@ mod_event_analysis_server <- function(id) {
       session = session,
       check_credentials = shinymanager::check_credentials(
         data.frame(
-          user = c("SQI Team", "lindsey"),
-          password = c("colourandshape", "mess9044")
+          user = c("SQI Team", "lindsey", "sherry.sopko", "Tarmac Guest"),
+          password = c("colourandshape", "mess9044", "sparwood-tarmac-project-2025", 'guest-passcode-5150')
         )
         
       )
