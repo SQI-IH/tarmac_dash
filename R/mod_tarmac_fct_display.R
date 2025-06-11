@@ -80,7 +80,8 @@ summaryBarPlot <- function(dfT, color_palette = NULL) {
       colors = city_cols,  # Apply the custom color palette
       type = "bar",
       text = ~paste(year_month, "<br>Community:", City, "<br>Count:", count),
-      hoverinfo = "text"
+      textposition = "none",            # <- suppress always-visible labels
+      hoverinfo = "text"                # <- enable them on hover only
     ) %>%
     plotly::layout(
       barmode = "stack",  # Stack the bars instead of grouping
