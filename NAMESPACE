@@ -2,6 +2,7 @@
 
 export(allReports)
 export(app_sys)
+export(create_db_connection)
 export(create_incidence_map)
 export(cumOccurencePlot)
 export(edLoad)

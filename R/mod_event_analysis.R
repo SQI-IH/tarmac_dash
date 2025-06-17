@@ -198,7 +198,7 @@ mod_event_analysis_server <- function(id) {
         "and",
         "<span style='color:#005AA2;'>", input$event_time_range[2], "</span>",
         "<br> there were",
-        "<span style='color:#DE5428;'>", sum(df$n), "</span> ED visits<br>",
+        "<span style='color:#DE5428;'>", sum(df$n), "</span> ED visits that fit the above parameters<br>",
         site,
         "</span>"
       ))
