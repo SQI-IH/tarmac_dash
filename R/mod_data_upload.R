@@ -7,19 +7,22 @@ mod_data_upload_ui <- function(id) {
   ns <- NS(id)
   tabItem(
     tabName = "data_upload",
+    shinyjs::useShinyjs(),
+    shinyWidgets::useSweetAlert(),
+    
     fluidRow(
       box(
         title = "Upload & Process Data",
         width = 12,
         fileInput(ns("file"), "Upload CSV File", accept = ".csv"),
         checkboxInput(ns("upload_to_db"), "Upload to Supabase?", value = FALSE),
-        actionButton(ns("process"), "Process & Ingest Data")
+        actionButton(ns("process"), "Process & Ingest Data"),
+        verbatimTextOutput(ns("status"))
       ),
       box(
         title = "Preview Uploaded Data",
         width = 12,
-        DT::dataTableOutput(ns("preview")),
-        verbatimTextOutput(ns("status"))
+        DT::dataTableOutput(ns("preview"))
       )
     )
   )
@@ -29,6 +32,11 @@ mod_data_upload_ui <- function(id) {
 
 mod_data_upload_server <- function(input, output, session, conn = NULL, output_dir = "app_data/ed") {
   ns <- session$ns
+  shinyjs::disable(ns("process"))
+  
+  source("R/fct_clean_ed_data.R")
+  source("R/fct_write_site_csvs.R")
+  source("R/fct_build_homepage_summary.R")
   
   raw_data <- reactiveVal(NULL)
   cleaned_data <- reactiveVal(NULL)
@@ -37,25 +45,49 @@ mod_data_upload_server <- function(input, output, session, conn = NULL, output_d
     req(input$file)
     df <- readr::read_csv(input$file$datapath, show_col_types = FALSE)
     raw_data(df)
+    
+    shinyjs::enable(ns("process"))
   })
   
   observeEvent(input$process, {
+    print("button works")
     req(raw_data())
     
-    source("R/fct_clean_ed_data.R")
-    source("R/fct_write_site_csvs.R")
-    if (isTRUE(input$upload_to_db)) source("R/fct_upload_to_supabase.R")
-    
-    clean_df <- clean_ed_data(raw_data())
-    cleaned_data(clean_df)
-    
-    write_site_csvs(clean_df, output_dir = output_dir)
-    
-    if (isTRUE(input$upload_to_db) && !is.null(conn)) {
-      upload_to_supabase(clean_df, conn)
-    }
-    
-    output$status <- renderText("✅ Data successfully processed.")
+    withProgress(message = "Processing data...", value = 0, {
+      incProgress(0.1, detail = "Loading functions")
+      source("R/fct_clean_ed_data.R")
+      source("R/fct_write_site_csvs.R")
+      source("R/fct_build_homepage_summary.R")
+      
+      tryCatch({
+        incProgress(0.2, detail = "Cleaning data")
+        clean_df <- clean_ed_data(raw_data())
+        cleaned_data(clean_df)
+        
+        progress <- shiny::Progress$new()
+        progress$set(message = "Saving site files", value = 0)
+        on.exit(progress$close(), add = TRUE)
+        
+        write_site_csvs(clean_df, output_dir = output_dir, progress = progress)
+        print("Data Saved")
+        
+        if (isTRUE(input$upload_to_db) && !is.null(conn)) {
+          source("R/fct_upload_to_supabase.R")
+          incProgress(0.75, detail = "Uploading to Supabase")
+          upload_to_supabase(clean_df, conn)
+        }
+        
+        incProgress(0.85, detail = "Building summaries")
+        build_homepage_summary()
+        print("Data Summarized")
+        
+        incProgress(1, detail = "Done")
+        output$status <- renderText("✅ Data successfully processed.")
+      }, error = function(e) {
+        print(paste("❌ Error during processing:", e$message))
+        output$status <- renderText(paste("❌ Error:", e$message))
+      })
+    })
   })
   
   output$preview <- DT::renderDataTable({
@@ -70,10 +102,9 @@ mod_data_upload_server <- function(input, output, session, conn = NULL, output_d
 
 ## copy to body.R
 # mod_data_upload_ui("data_upload_ui_1")
- 
+
 ## copy to app_server.R
 # callModule(mod_data_upload_server, "data_upload_ui_1")
- 
+
 ## copy to sidebar.R
-# menuItem("displayName",tabName = "data_upload",icon = icon("user"))
- 
+# menuItem("displayName", tabName = "data_upload", icon = icon("user"))
