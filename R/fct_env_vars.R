@@ -15,8 +15,9 @@ not.included <- c(
   "Revelstoke", "Salmon Arm", "Sparwood", "Vernon", "Williams Lake")
 
 dynamicText <- function(){
-  googlesheets4::read_sheet('https://docs.google.com/spreadsheets/d/1Wkqz6LQQUP34q9Gq2YVWzIU9v9Hz77AK_TF80IEJw0s/edit?gid=0#gid=0')
-}
+  # googlesheets4::read_sheet('https://docs.google.com/spreadsheets/d/1Wkqz6LQQUP34q9Gq2YVWzIU9v9Hz77AK_TF80IEJw0s/edit?gid=0#gid=0')
+"Tarmac Triage activates two hours before an emergency department closure to quickly redirect patients to appropriate care."  
+  }
 
 # Google Drive Folder ID (replace with your actual folder ID)
 DRIVE_FOLDER_ID <- "19te_XAcl6w6PmlWMhgb3ZyzfODsuCU9X"

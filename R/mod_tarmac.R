@@ -94,18 +94,12 @@ mod_tarmac_server <- function(id) {
     tarmacData <- shiny::reactive(load_tarmac_data(edData()))
     
     output$tarmacs_per_year <- shinydashboard::renderValueBox({
-      recent <- tarmacData() %>%
-        dplyr::mutate(
-          ed_arrival_date_time = if (!lubridate::is.POSIXct(ed_arrival_date_time)) {
-            lubridate::ymd_hms(ed_arrival_date_time)
-          } else {
-            ed_arrival_date_time
-          }
-        ) %>%
-        dplyr::filter(ed_arrival_date_time >= (lubridate::today() - lubridate::dmonths(12)))
+      recent <- read.csv("app_data/homepage_summary.csv") 
+      
+      
       
       shinydashboard::valueBox(
-        value = nrow(recent),
+        value = sum(recent$tarmac_12mo),
         subtitle = shiny::HTML("Tarmac Patients Registered in the past 12 months"),
         icon = shiny::icon("hospital-user"),
         color = "green"
@@ -114,7 +108,7 @@ mod_tarmac_server <- function(id) {
     
     output$tarmac_text <- shiny::renderText({
       df <- dynamicText()
-      df$text[df$instrument == 'aim text']
+      # df$text[df$instrument == 'aim text']
     })
     
     output$tarmacBar <- plotly::renderPlotly({

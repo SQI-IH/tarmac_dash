@@ -5,4 +5,5 @@ app_server <- function(input, output, session) {
   # callModule(mod_site_profile_server, "site_profile_ui_1")
   mod_ed_statistics_server("ed_statistics_ui_1")
   mod_event_analysis_server("event_analysis_ui_1")
+  callModule(mod_data_upload_server, "data_upload_ui_1", conn = create_db_connection())
 }

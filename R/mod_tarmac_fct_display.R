@@ -2,13 +2,15 @@
 #' @export
 #' @name mod_tarmac_fct_display
 
-tarmacFilter<- function(df){
+tarmacFilter <- function(df) {
   df |>
     filter(stringr::str_detect(
-      stringr::str_to_lower(discharge_comment), # Convert to lowercase for case-insensitive matching
-      stringr::regex("t[ar]{1,2}m[ac]{1,2}", ignore_case = TRUE) # Fuzzy regex matching "tarmac" with minor typos
+      stringr::str_to_lower(discharge_comment),
+      # Match variations of "tarmac" as a standalone word or phrase
+      stringr::regex("\\btar+ma+c+k?\\b", ignore_case = TRUE)
     ))
 }
+
 
 tarmac_boxUI <- function(ns){
   renderUI({
@@ -29,34 +31,27 @@ tarmac_boxUI <- function(ns){
 }
 
 summaryBarPlot <- function(dfT, color_palette = NULL) {
-  # Convert the date column to Date type
-  data <- dfT %>%
-    mutate(
-      ed_arrival_date_time = ymd_hms(ed_arrival_date_time),
-      year_month = ym(year_mo) # Extract year-month
-    )
-  
-  # Get the range for the last 12 months
-  end_date <- floor_date(Sys.Date(), "month")
-  start_date <- end_date - months(11)
-  
-  # Generate a complete year-month sequence
-  all_months <- seq.Date(start_date, end_date, by = "month")
-  
-  # Create a summary table with counts
-  summary_data <- data %>%
-    dplyr::filter(year_month >= start_date & year_month <= end_date) %>%
-    dplyr::group_by(City, year_month) %>%
-    dplyr::summarise(count = n(), .groups = "drop") %>%
-    tidyr::complete(
-      City,
-      year_month = all_months,
-      fill = list(count = 0)
-    )
+  df <- read.csv("app_data/monthly_counts_by_site.csv")
+  # Determine the last 12 months based on your latest data
+latest_month <- max(ym(df$arrival_month))
+all_months <- seq(latest_month %m-% months(11), latest_month, by = "month")
+
+  dfProf <- profileLoad() 
+  dfPlot <- dfProf |>
+    select(`Data Code`, City) |>
+    right_join(df, by = c("Data Code" = "facility_name")) |>
+    # tidyr::pivot_longer(
+    #   cols = -c(City, `Data Code`),
+    #   names_to = "month",
+    #   values_to = "count"
+    # ) |>
+    mutate(year_month = format(ym(arrival_month), "%b %Y"))
+
+  all_months <- sort(my(unique(dfPlot$year_month)))
   
   # Ensure year_month is treated as a factor ordered by date
-  summary_data <- summary_data %>%
-    mutate(year_month = factor(format(year_month, "%b %Y"), levels = format(all_months, "%b %Y")))
+  summary_data <- dfPlot %>%
+    mutate(year_month = factor(year_month, levels = format(all_months, "%b %Y")))
   
   # If no custom color palette is provided, use a default one
   if (is.null(color_palette)) {
@@ -67,19 +62,25 @@ summaryBarPlot <- function(dfT, color_palette = NULL) {
     c(
       "Castlegar"=  "#1f77b4", # blue
       "Sparwood" =  "#f5c647",
-      "Chase" = "#17becf"  # cyan
+      "Chase" = "#17becf",  # cyan,
+      "Keremeos" = "#F15A25"
     )
   
-  x <- summary_data |> group_by(year_month) |> summarise(n = sum(count))
+  
+
   # Plotly stacked bar chart with custom color palette
-  summary_data %>%
+  summary_data <- summary_data %>%
+    filter(City %in% names(city_cols))
+  x <- summary_data |> group_by(date) |> summarize(n = sum(n)) 
+  
+  summary_data |>
     plotly::plot_ly(
       x = ~year_month,
-      y = ~count,
+      y = ~n,
       color = ~City,
       colors = city_cols,  # Apply the custom color palette
       type = "bar",
-      text = ~paste(year_month, "<br>Community:", City, "<br>Count:", count),
+      text = ~paste(year_month, "<br>Community:", City, "<br>Count:", n),
       textposition = "none",            # <- suppress always-visible labels
       hoverinfo = "text"                # <- enable them on hover only
     ) %>%
@@ -118,8 +119,8 @@ allEd <- function(site = "All Tarmac Sites") {
   }
   
   paths <- filenameCreate(dfProf, cities)
-  purrr::map_dfr(paths, data.table::fread) %>%
-    mutate(datetime = parse_ed_time(ed_arrival_date_time),
+  purrr::map_dfr(paths, ~data.table::fread(.x, colClasses = "character")) %>%
+    mutate(datetime = parse_ed_time(arrival_datetime),
            date = as.Date(datetime),
            weekdate = weekdate(date),
            Hour = hour(datetime),
@@ -159,10 +160,13 @@ weekdate <- function(date) {
 }
 
 
-load_tarmac_data <- function(df){
+load_tarmac_data <- function(df, dfProf){
   dfP <- profileLoad()
   dfP <- dfP |>
     rename('facility_name' = "Data Code")
-  dfT <- tarmacFilter(df)
-  left_join(dfT, dfP)
+  # dfT <- tarmacFilter(df)
+  # left_join(dfT, dfP)
+  data.table::fread("app_data/monthly_counts_by_site.csv") |>
+    left_join(dfP)
+  
 }
