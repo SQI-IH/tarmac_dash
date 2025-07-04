@@ -7,7 +7,7 @@ test_that("upload_to_supabase writes to the database", {
 
   conn <- create_db_connection()
   test_df <- data.frame(
-    site_name = "SiteX",
+    facility_name = "SiteX",
     val = 123
   )
 

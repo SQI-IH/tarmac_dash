@@ -3,12 +3,14 @@
 #' @name mod_tarmac_fct_display
 
 tarmacFilter <- function(df) {
-  df |>
-    filter(stringr::str_detect(
-      stringr::str_to_lower(discharge_comment),
-      # Match variations of "tarmac" as a standalone word or phrase
-      stringr::regex("\\btar+ma+c+k?\\b", ignore_case = TRUE)
-    ))
+  df %>%
+    dplyr::filter(
+      stringr::str_detect(stringr::str_to_lower(discharge_comment),
+                          stringr::regex("t[ar]{1,2}m[ac]{1,2}", ignore_case = TRUE)),
+      !stringr::str_detect(discharge_comment, "Tamara"),
+      !stringr::str_detect(discharge_comment, "tramadol"),
+      !stringr::str_detect(discharge_comment, "Tramacet")
+    )
 }
 
 
@@ -117,7 +119,6 @@ allEd <- function(site = "All Tarmac Sites") {
   } else {
     site
   }
-  
   paths <- filenameCreate(dfProf, cities)
   purrr::map_dfr(paths, ~data.table::fread(.x, colClasses = "character")) %>%
     mutate(datetime = parse_ed_time(arrival_datetime),
@@ -126,6 +127,7 @@ allEd <- function(site = "All Tarmac Sites") {
            Hour = hour(datetime),
            time = format(datetime, "%H:%M:%S"),
            Year = year(date))
+  
 }
 
 profileLoad <- function(){

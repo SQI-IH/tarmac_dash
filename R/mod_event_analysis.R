@@ -60,24 +60,17 @@ mod_event_analysis_server <- function(id) {
     
     caldata <- shiny::reactive({
       df <- edData() 
-      
       df <- df |>
         dplyr::mutate(
+          year_mo = format(ymd(date), "%Y-%m"),
           year = lubridate::year(lubridate::ym(.data$year_mo)),
-          ed_arrival_date_time = parse_ed_time(ed_arrival_date_time),
-          date = parse_ed_time(ed_arrival_date_time),
+          date = parse_ed_time(date),
           Hour = lubridate::hour(date)
         )
       
       if (input$tarmac_labeled == "Yes") {
         df <- df |>
-          dplyr::filter(
-            stringr::str_detect(stringr::str_to_lower(discharge_comment),
-                                stringr::regex("t[ar]{1,2}m[ac]{1,2}", ignore_case = TRUE)),
-            !stringr::str_detect(discharge_comment, "Tamara"),
-            !stringr::str_detect(discharge_comment, "tramadol"),
-            !stringr::str_detect(discharge_comment, "Tramacet")
-          )
+          tarmacFilter()
       }
       
       if (input$view_mode == "by Year") {
@@ -94,9 +87,9 @@ mod_event_analysis_server <- function(id) {
       )
       
       if (nrow(df) > 0) {
-        newest_dt <- max(df$ed_arrival_date_time, na.rm = TRUE)
+        newest_dt <- max(df$date, na.rm = TRUE)
         cutoff_dt <- parse_ed_time(newest_dt) - months(last)
-        df <- dplyr::filter(df, ed_arrival_date_time >= cutoff_dt)
+        df <- dplyr::filter(df, date >= cutoff_dt)
       }
       
       if ("other" %in% input$ctas) {
@@ -165,16 +158,17 @@ mod_event_analysis_server <- function(id) {
       df <- dplyr::left_join(df, df2, by = c("facility_name" = "Data Code"))
       df |>
         dplyr::select(
-          arrival_mode, ctas_level, City, ed_arrival_date_time,
-          ed_departure_disposition_desc, discharge_comment
+          arrival_mode, ctas_level, City, date, datetime,
+          ed_departure_disposition, discharge_comment, account_number_hash
         ) |>
-        dplyr::mutate(Datetime = format(lubridate::ymd_hms(ed_arrival_date_time), "%Y-%m-%d %H:%M:%S")) |>
-        dplyr::select(-ed_arrival_date_time) |>
+        dplyr::mutate(Datetime = format(lubridate::ymd_hms(datetime), "%Y-%m-%d %H:%M:%S")) |>
+        # dplyr::select(-ed_arrival_date_time) |>
         dplyr::rename(
           "Arrival Mode" = arrival_mode,
           "CTAS" = ctas_level,
           "Comment" = discharge_comment,
-          "Discharge Disp" = ed_departure_disposition_desc
+          "Discharge Disp" = ed_departure_disposition,
+          "Account" = account_number_hash
         ) |>
         dplyr::arrange(dplyr::desc(Datetime))
     }, options = list(dom = "tip", pageLength = 5))

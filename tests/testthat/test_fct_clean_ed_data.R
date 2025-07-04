@@ -7,7 +7,7 @@ test_that("clean_ed_data drops sensitive fields and hashes account_number", {
     ed_arrival_date_time = c("2025-01-01 12:00:00", "2025-01-02 13:30:00", "2025-01-01 12:00:00"),
     disposition = c("A", "B", "A"),
     diagnosis = c("X", "Y", "X"),
-    site_name = c("Kamloops", "Kamloops", "Kamloops")
+    facility_name = c("Kamloops", "Kamloops", "Kamloops")
   )
   
   cleaned <- clean_ed_data(raw_df)

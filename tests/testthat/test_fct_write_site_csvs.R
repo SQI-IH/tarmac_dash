@@ -4,7 +4,7 @@ library(testthat)
 
 test_that("write_site_csvs writes one file per site", {
   df <- data.frame(
-    site_name = c("SiteA", "SiteB", "SiteA"),
+    facility_name = c("SiteA", "SiteB", "SiteA"),
     val = 1:3
   )
 
