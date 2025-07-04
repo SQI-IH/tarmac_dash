@@ -15,6 +15,11 @@ build_homepage_summary <- function(data_dir = "app_data/ed", output_path = "app_
   withProgress(message = "Building homepage summary...", value = 0, {
     files <- list.files(data_dir, pattern = "\\.csv$", full.names = TRUE)
     incProgress(0.1, detail = "Loading data")
+    # Pull corrections from Google Sheet
+    # corrections <- read.csv('app_data/manual_discharge_corrections.csv')
+    corrections <- googlesheets4::read_sheet('https://docs.google.com/spreadsheets/d/1Us6ZeItInP_UC72jxhrSc2ufwFYkpF7aTJ4Y6os2jdo/edit?gid=0#gid=0')
+    
+    # Apply corrections to your loaded ED data
     
     all_ed <- purrr::map_dfr(files, function(file) {
       df <- tryCatch(readr::read_csv(file, show_col_types = FALSE), error = function(e) NULL)
@@ -31,6 +36,13 @@ build_homepage_summary <- function(data_dir = "app_data/ed", output_path = "app_
       }
       df
     })
+    
+    all_ed <- all_ed %>%
+      dplyr::left_join(corrections, by = "account_number_hash") %>%
+      dplyr::mutate(
+        discharge_comment = coalesce(corrected_discharge_comment, discharge_comment)
+      ) %>%
+      dplyr::select(-corrected_discharge_comment)
     
     incProgress(0.4, detail = "Processing tarmac data")
     all_ed <- all_ed %>%

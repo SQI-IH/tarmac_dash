@@ -5,8 +5,8 @@ write_site_csvs <- function(df, output_dir = "app_data/ed", progress = NULL) {
   total_sites <- length(sites)
   
   split(df, df$facility_name) %>%
-    purrr::iwalk(function(site_df, site_name) {
-      outfile <- file.path(output_dir, paste0(site_name, ".csv"))
+    purrr::iwalk(function(site_df, facility_name) {
+      outfile <- file.path(output_dir, paste0(facility_name, ".csv"))
       
       site_df <- site_df %>% dplyr::mutate(across(everything(), as.character))
       
@@ -24,7 +24,7 @@ write_site_csvs <- function(df, output_dir = "app_data/ed", progress = NULL) {
       
       # Update progress if available
       if (!is.null(progress)) {
-        progress$inc(1 / total_sites, detail = paste("Processed site:", site_name))
+        progress$inc(1 / total_sites, detail = paste("Processed site:", facility_name))
       }
     })
 }

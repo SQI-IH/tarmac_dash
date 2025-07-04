@@ -36,14 +36,14 @@ raw_df <- map_dfr(raw_files, ~{
 })
 
 # Rename fallback if site_name is missing but facility_name exists
-if (!"site_name" %in% names(raw_df) && "facility_name" %in% names(raw_df)) {
-  raw_df <- raw_df %>% rename(site_name = facility_name)
+if (!"facility_name" %in% names(raw_df) && "site_name" %in% names(raw_df)) {
+  raw_df <- raw_df %>% rename(facility_name = site_name)
 }
 print("🧾 Sample column names from cleaned data:")
 print(names(raw_df))
 
 # Step 3: Validate key columns
-required_cols <- c("ed_arrival_date_time", "site_name")
+required_cols <- c("ed_arrival_date_time", "facility_name")
 missing <- setdiff(required_cols, names(raw_df))
 if (length(missing) > 0) {
   stop("❌ Missing required columns: ", paste(missing, collapse = ", "))
@@ -52,7 +52,7 @@ if (length(missing) > 0) {
 
 
 # Step 4: Split by site and write one complete file per site
-by_site <- split(raw_df, raw_df$site_name)
+by_site <- split(raw_df, raw_df$facility_name)
 
 for (site in names(by_site)) {
   site_df <- by_site[[site]]
